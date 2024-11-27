@@ -1,0 +1,83 @@
+<project>
+
+	<!-- _________________________ Application Settings _________________________ -->
+
+	<app
+		title="Friday Night Funkin' > Doritos PM"
+		file="Doritos"
+		packageName="io.dixnutzzz.doritos"
+		main="Main"
+		version="0.0.1-dev"
+		company="DixNutzzz"
+	/>
+
+	<!-- The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
+		or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal" -->
+	<app preloader="flixel.system.FlxPreloader"/>
+
+	<!-- ____________________________ Window Settings ___________________________ -->
+
+	<window
+		width="1280"
+		height="720"
+		background="#000000"
+		hardware="true"
+	/>
+
+	<window if="html5 || wasm"
+		resizable="true"
+	/>
+
+	<window if="desktop"
+		orientation="landscape"
+		fullscreen="false"
+		resizable="true"
+	/>
+
+	<window if="mobile"
+		orientation="landscape"
+		fullscreen="true"
+		width="0"
+		height="0"
+		resizable="false"
+	/>
+
+	<!-- _____________________________ Path Settings ____________________________ -->
+
+	<app path="out/${buildType}"/>
+	<source path="source"/>
+
+	<!-- __________________________ Game Assets & Etc. __________________________ -->
+
+	<set name="assets.exclude" value="*.ogg" if="html5"/>
+	<set name="assets.exclude" value="*.mp3" unless="html5"/>
+
+	<!-- <assets path="" exclude="${assets.exclude}"/> -->
+	<assets path="assets" exclude="${assets.exclude}"/>
+
+	<!-- ______________________________ Haxedefines _____________________________ -->
+
+	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN"/>
+	<haxedef name="FLX_NO_DEBUG" unless="debug"/>
+
+	<haxedef name="analyzer-optimize"/>
+
+	<!-- _______________________________ Libraries ______________________________ -->
+
+	<haxelib name="flixel"/>
+	<haxelib name="flixel-addons"/>
+
+	<!-- HScript for flixel debugger -->
+	<haxelib name="hscript"/>
+
+	<!-- _________________________________ Macros _______________________________ -->
+
+	<haxeflag name="--macro" value="addMetadata('@:build(fnf.backend.macros.FlxMacro.buildFlxObject())', 'flixel.FlxObject')"/>
+	<haxeflag name="--macro" value="addMetadata('@:build(fnf.backend.macros.FlxMacro.buildFlxCamera())', 'flixel.FlxCamera')"/>
+	<haxeflag name="--macro" value="addMetadata('@:build(fnf.backend.macros.FlxMacro.buildFlxSprite())', 'flixel.FlxSprite')"/>
+
+	<!-- _________________________________ Tasks ________________________________ -->
+
+	<!-- _________________________________ Icons ________________________________ -->
+
+</project>
