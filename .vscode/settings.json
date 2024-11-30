@@ -1,7 +1,4 @@
 {
-	"search.exclude": {
-		"out/**/*.*": true
-	},
 	"haxe.enableExtendedIndentation": true,
 
 	"editor.insertSpaces": false,

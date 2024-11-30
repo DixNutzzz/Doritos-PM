@@ -14,20 +14,20 @@ class MusicBeatState extends FlxTransitionableState {
 	override function create() {
 		super.create();
 
-		Conductor.onStepHit.add(stepHit);
-		Conductor.onBeatHit.add(beatHit);
-		Conductor.onMeasureHit.add(measureHit);
+		Conductor.ME.onStepHit.add(stepHit);
+		Conductor.ME.onBeatHit.add(beatHit);
+		Conductor.ME.onMeasureHit.add(measureHit);
 	}
 
 	override function destroy() {
-		Conductor.onStepHit.remove(stepHit);
-		Conductor.onBeatHit.remove(beatHit);
-		Conductor.onMeasureHit.remove(measureHit);
+		Conductor.ME.onStepHit.remove(stepHit);
+		Conductor.ME.onBeatHit.remove(beatHit);
+		Conductor.ME.onMeasureHit.remove(measureHit);
 
 		super.destroy();
 	}
 
-	function stepHit(oldStep:Int, newStep:Int) {}
-	function beatHit(oldBeat:Int, newBeat:Int) {}
-	function measureHit(oldMeasure:Int, newMeasure:Int) {}
+	function stepHit(step:Int) {}
+	function beatHit(beat:Int) {}
+	function measureHit(measure:Int) {}
 }

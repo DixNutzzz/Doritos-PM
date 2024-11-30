@@ -30,9 +30,9 @@ class SustainNote extends Note {
 	}
 
 	override function update(elapsed:Float) {
-		updateClipping();
+		if (hasBeenHit) updateClipping();
+		if (clipRect != null && clipRect.height <= 0) kill();
 		super.update(elapsed);
-		visible = spawned && (clipRect == null || clipRect.height > 0);
 	}
 
 	public function updateClipping() {
@@ -61,5 +61,13 @@ class SustainNote extends Note {
 		clipRect = ClientPrefs.data.highAccuracyNoteClip ? v : v.round();
 		if (frames != null) frame = frames.frames[animation.frameIndex];
 		return v;
+	}
+
+	override function isPossibleToHit():Bool {
+		return songTime - Conductor.songPosition <= Conductor.NOTE_HIT_WINDOW;
+	}
+
+	override function isSustain():Bool {
+		return true;
 	}
 }

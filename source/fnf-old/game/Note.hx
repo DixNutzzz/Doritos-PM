@@ -106,22 +106,4 @@ class Note extends FlxSprite {
 
 		return tail.copy();
 	}
-
-	public function followStrum(strum:Strum, scrollSpeed:Float) {
-		var distance = -0.45 * (Conductor.songPosition - songTime) * scrollSpeed * multSpeed;
-
-		var rotation = strum.direction * FlxAngle.TO_RAD;
-		if (copyAngle) angle = strum.direction - 90 + strum.angle + offsetAngle;
-
-		if (copyAlpha) alpha = strum.alpha * multAlpha;
-
-		if (isSustain && parent != null) {
-			if (copyX) x = strum.x + offsetX + FlxMath.fastCos(rotation) * distance;
-			if (copyY) y = strum.y + offsetY + FlxMath.fastSin(rotation) * distance;
-		}
-	}
-
-	public function clipToStrum(strum:Strum) {
-
-	}
 }

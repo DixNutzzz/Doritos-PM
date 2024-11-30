@@ -1,7 +1,7 @@
 <event>
 
 	<description>
-
+		Set beats per minute
 	</description>
 
 	<param name="BPM" type="float"/>

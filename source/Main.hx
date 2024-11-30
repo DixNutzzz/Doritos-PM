@@ -20,6 +20,8 @@ class Main extends Sprite {
 		FlxG.console.registerClass(fnf.backend.save.ClientPrefs);
 		FlxG.console.registerClass(fnf.backend.Logger);
 
+		fnf.backend.Conductor.ME = new fnf.backend.Conductor();
+
 		FlxG.switchState(() -> new fnf.game.PlayState());
 	}
 }

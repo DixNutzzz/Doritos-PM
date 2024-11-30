@@ -20,7 +20,10 @@ class Note extends FlxSprite {
 	public var multAlpha = 1.0;
 	public var multSpeed = 1.0;
 
+	public var lowPriority = false;
+
 	private var spawned = false;
+	private var hasBeenHit = false;
 
 	public var skin(default, set):String;
 		@:noCompletion inline function set_skin(v) {
@@ -73,5 +76,13 @@ class Note extends FlxSprite {
 		}
 
 		return sustains;
+	}
+
+	public function isPossibleToHit():Bool {
+		return Math.abs(songTime - Conductor.songPosition) <= Conductor.NOTE_HIT_WINDOW;
+	}
+
+	public function isSustain():Bool {
+		return false;
 	}
 }

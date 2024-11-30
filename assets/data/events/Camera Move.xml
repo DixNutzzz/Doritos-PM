@@ -1,0 +1,14 @@
+<event>
+
+	<description>
+
+		Move camera to selected character
+
+	</description>
+
+	<param name="Character Index" type="int" optional="true"/>
+
+	<param name="Force X" type="float" optional="true" if="params[0] == null"/>
+	<param name="Force Y" type="float" optional="true" if="params[0] == null"/>
+
+</event>

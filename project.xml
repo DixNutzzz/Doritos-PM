@@ -61,20 +61,17 @@
 	<haxedef name="FLX_NO_DEBUG" unless="debug"/>
 
 	<haxedef name="analyzer-optimize"/>
+	<haxedef name="hscriptPos"/>
 
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel"/>
 	<haxelib name="flixel-addons"/>
 
-	<!-- HScript for flixel debugger -->
+	<!-- <haxelib name="rulescript"/> -->
 	<haxelib name="hscript"/>
 
 	<!-- _________________________________ Macros _______________________________ -->
-
-	<haxeflag name="--macro" value="addMetadata('@:build(fnf.backend.macros.FlxMacro.buildFlxObject())', 'flixel.FlxObject')"/>
-	<haxeflag name="--macro" value="addMetadata('@:build(fnf.backend.macros.FlxMacro.buildFlxCamera())', 'flixel.FlxCamera')"/>
-	<haxeflag name="--macro" value="addMetadata('@:build(fnf.backend.macros.FlxMacro.buildFlxSprite())', 'flixel.FlxSprite')"/>
 
 	<!-- _________________________________ Tasks ________________________________ -->
 

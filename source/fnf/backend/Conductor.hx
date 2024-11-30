@@ -2,93 +2,100 @@ package fnf.backend;
 
 import fnf.backend.beatmap.BeatmapData;
 import flixel.util.FlxSignal.FlxTypedSignal;
+import openfl.media.SoundChannel;
+import flixel.sound.FlxSound;
+import flixel.util.typeLimit.OneOfThree;
 
 typedef BPMChangeEvent = {
 	var time: {
-		var step:Float;
 		var ms:Float;
+		var step:Float;
 	}
 	var bpm:Float;
-	var stepDuration:Float;
+	var beatsPerMeasure:Float;
+	var stepsPerBeat:Float;
 }
 
 class Conductor {
-	private static var bpmChangeMap:Array<BPMChangeEvent> = [];
-	private static var curBPMChange:BPMChangeEvent = null;
+	public static var ME:Conductor;
 
-	public static var bpm (get, never):Null<Float>;
-		@:noCompletion static inline function get_bpm() return curBPMChange?.bpm;
+	private var bpmChangeMap:Array<BPMChangeEvent> = [];
+	private var curEvent:BPMChangeEvent;
 
-	public static var stepDuration (get, never):Null<Float>;
-		@:noCompletion static inline function get_stepDuration() return curBPMChange?.stepDuration;
+	public final onBPMChange = new FlxTypedSignal<(oldBPM:Float, newBPM:Float)->Void>();
+	public final onStepHit = new FlxTypedSignal<Int->Void>();
+	public final onBeatHit = new FlxTypedSignal<Int->Void>();
+	public final onMeasureHit = new FlxTypedSignal<Int->Void>();
 
-	public static final onBPMChange = new FlxTypedSignal<(oldBPM:Float, newBPM:Float)->Void>();
-	public static final onStepHit = new FlxTypedSignal<(oldStep:Int, newStep:Int)->Void>();
-	public static final onBeatHit = new FlxTypedSignal<(oldBeat:Int, newBeat:Int)->Void>();
-	public static final onMeasureHit = new FlxTypedSignal<(oldMeasure:Int, newMeasure:Int)->Void>();
+	public var bpm(get, never):Null<Float>;
+		@:noCompletion inline function get_bpm() return curEvent?.bpm;
 
-	public static var step(default, null):Float;
-	public static var beat(default, null):Float;
-	public static var measure(default, null):Float;
+	public var beatsPerMeasure(get, never):Null<Float>;
+		@:noCompletion inline function get_beatsPerMeasure() return curEvent?.beatsPerMeasure;
 
-	public static var songPosition (default, set):Float;
-		@:noCompletion static function set_songPosition(v) {
-			var lastBPMChange = curBPMChange;
-			for (event in bpmChangeMap) if (event.time.ms <= v) curBPMChange = event;
-			if (lastBPMChange != curBPMChange && lastBPMChange != null) onBPMChange.dispatch(lastBPMChange.bpm, curBPMChange.bpm);
+	public var stepsPerBeat(get, never):Null<Float>;
+		@:noCompletion inline function get_stepsPerBeat() return curEvent?.stepsPerBeat;
 
-			var lastStep = Math.floor(step);
-			step = curBPMChange.time.step + (v - curBPMChange.time.ms) / curBPMChange.stepDuration;
-			var curStep = Math.floor(step);
-			if (curStep != lastStep) {
-				onStepHit.dispatch(lastStep, curStep);
+	public var step(default, null) = 0.0;
+	public var beat(default, null) = 0.0;
+	public var measure(default, null) = 0.0;
 
-				var lastBeat = Math.floor(beat);
-				beat = step / 4;
-				var curBeat = Math.floor(beat);
-				if (curBeat != lastBeat) {
-					onBeatHit.dispatch(lastBeat, curBeat);
+	public function new() {}
 
-					var lastMeasure = Math.floor(measure);
-					measure = beat / 4;
-					var curMeasure = Math.floor(measure);
-					if (curMeasure != lastMeasure) onMeasureHit.dispatch(lastMeasure, curMeasure);
-				}
-			}
-
-			return songPosition = v;
-		}
-
-	public static function getBPMAtTime(time:Float):Float {
-		var result = 0.0;
-		for (event in bpmChangeMap) if (event.time.ms <= time) result = event.bpm;
-		return result;
-	}
-
-	public static function mapBPMChanges(beatmap:BeatmapData) {
+	public function uploadBeatmap(beatmap:BeatmapData) {
 		bpmChangeMap = [ {
-			time: {
-				step: 0,
-				ms: 0
-			},
-			bpm: beatmap.bpm,
-			stepDuration: 60 / beatmap.bpm * 1000 / 4
+			time: { ms: 0, step: 0 },
+			bpm: beatmap.meta.bpm,
+			beatsPerMeasure: beatmap.meta.beatsPerMeasure,
+			stepsPerBeat: beatmap.meta.stepsPerBeat
 		} ];
-
-		var curBPM = beatmap.bpm;
-		for (e in beatmap.events) if (beatmap.eventKinds[e.k] == 'BPM Change') {
-			var newBPM = beatmap.eventParams[e.p[0]];
-			if (newBPM == curBPM) continue;
-
-			var lastEvent = bpmChangeMap[bpmChangeMap.length - 1];
+		for (e in beatmap.events) if (e.k == 'BPM Change' && e.p[0] is Float && e.p[1] is Float && e.p[2] is Float) {
+			var stepDuration = 60 / bpmChangeMap[bpmChangeMap.length - 1].bpm * 1000 / 4;
 			bpmChangeMap.push({
 				time: {
-					step: lastEvent.time.step + (e.t - lastEvent.time.ms) / lastEvent.stepDuration,
-					ms: e.t
+					ms: e.t,
+					step: (e.t - bpmChangeMap[bpmChangeMap.length - 1].time.ms) / stepDuration
 				},
-				bpm: newBPM,
-				stepDuration: 60 / newBPM * 1000 / 4
+				bpm: e.p[0],
+				beatsPerMeasure: e.p[1],
+				stepsPerBeat: e.p[2]
 			});
 		}
+	}
+
+	public function update(timeOrSoundOrChannel:OneOfThree<Float, FlxSound, SoundChannel>) {
+		if (timeOrSoundOrChannel is FlxSound) timeOrSoundOrChannel = @:privateAccess (timeOrSoundOrChannel : FlxSound)._channel.position;
+		if (timeOrSoundOrChannel is SoundChannel) timeOrSoundOrChannel = (timeOrSoundOrChannel : SoundChannel).position;
+
+		var time:Float = timeOrSoundOrChannel;
+
+		var lastEvent = curEvent;
+		curEvent = getEventAtTime(time);
+
+		if (curEvent != lastEvent && lastEvent != null) onBPMChange.dispatch(lastEvent.bpm, curEvent.bpm);
+
+		var lastStep = Math.floor(step);
+		var floorStep = Math.floor(step = curEvent.time.step + (time - curEvent.time.ms) / (60 / curEvent.bpm * 1000 / 4));
+		if (floorStep > lastStep) {
+			for (i in lastStep...floorStep) onStepHit.dispatch(i);
+
+			var lastBeat = Math.floor(beat);
+			var floorBeat = Math.floor(beat = step / stepsPerBeat);
+			if (floorBeat > lastBeat) {
+				for (i in lastBeat...floorBeat) onBeatHit.dispatch(i);
+
+				var lastMeasure = Math.floor(measure);
+				var floorMeasure = Math.floor(measure = beat / beatsPerMeasure);
+				if (floorMeasure > lastMeasure) {
+					for (i in lastMeasure...floorMeasure) onMeasureHit.dispatch(i);
+				}
+			}
+		}
+	}
+
+	public function getEventAtTime(time:Float):BPMChangeEvent {
+		var result:BPMChangeEvent = null;
+		for (event in bpmChangeMap) if (event.time.ms <= time) result = event;
+		return result;
 	}
 }

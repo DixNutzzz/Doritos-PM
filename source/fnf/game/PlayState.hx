@@ -1,52 +1,39 @@
 package fnf.game;
 
-import flixel.sound.FlxSound;
-import flixel.group.FlxGroup.FlxTypedGroup;
+import fnf.backend.Conductor;
 import flixel.FlxG;
 import fnf.backend.beatmap.Beatmap;
+import fnf.game.notes.StrumLine;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import fnf.backend.beatmap.BeatmapData;
 
-class PlayState extends MusicBeatState {
+class PlayState extends flixel.addons.transition.FlxTransitionableState {
+	public static inline var NOTE_HIT_WINDOW = 160;
+
+	public static var ME:PlayState;
+
 	public var beatmap:BeatmapData;
-
-	public var camGame:GameCamera;
-	public var camHUD:HudCamera;
-
-	/** Alias to `FlxG.sound.music` **/
-	public var inst:FlxSound;
 
 	public var strumLines:FlxTypedGroup<StrumLine>;
 
-	private var tryHits:Array<{ key:Int, time:Float }>;
-
 	override function create() {
+		ME = this;
+
 		beatmap = Beatmap.get('test');
-		Conductor.mapBPMChanges(beatmap);
-
-		camGame = new GameCamera();
-		FlxG.cameras.reset(camGame);
-
-		camHUD = new HudCamera();
-		FlxG.cameras.add(camHUD, false);
+		Conductor.ME.uploadBeatmap(beatmap);
 
 		strumLines = new FlxTypedGroup<StrumLine>();
-		strumLines.cameras = [ camHUD ];
 		add(strumLines);
 
-		for (strumDat in beatmap.strumLines) {
-			var strumLine = new StrumLine(strumDat.strumPos, strumDat.strumVisible, strumDat.notes, beatmap.noteKinds);
+		FlxG.sound.playMusic(Paths.inst(beatmap.meta.song));
+
+		for (i => dat in beatmap.strumLines) {
+			var strumLine = new StrumLine(dat.strumPos, dat.strumScale, dat.scrollSpeed);
+			strumLine.cpuControlled = dat.cpu;
+			strumLine.generateNotes(beatmap, i);
 			strumLines.add(strumLine);
 		}
 
-		FlxG.sound.playMusic(Paths.inst('test'));
-		inst = FlxG.sound.music;
-
 		super.create();
-	}
-
-	override function update(elapsed:Float) {
-		Conductor.songPosition = inst.time;
-
-		super.update(elapsed);
 	}
 }

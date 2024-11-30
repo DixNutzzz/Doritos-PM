@@ -1,0 +1,13 @@
+<event>
+
+	<description>
+
+		Change beats per measure and time signature.
+
+	</description>
+
+	<param name="BPM" type="float"/>
+	<param name="Beats per Measure" type="float"/>
+	<param name="Steps per Beat" type="float"/>
+
+</event>
