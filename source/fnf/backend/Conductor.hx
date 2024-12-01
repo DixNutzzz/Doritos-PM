@@ -64,13 +64,8 @@ class Conductor {
 	}
 
 	public function update(timeOrSoundOrChannel:OneOfThree<Float, FlxSound, SoundChannel>) {
-		if (timeOrSoundOrChannel == null) return;
-		try {
-			if (timeOrSoundOrChannel is FlxSound) timeOrSoundOrChannel = @:privateAccess (timeOrSoundOrChannel : FlxSound)._channel.position;
-			if (timeOrSoundOrChannel is SoundChannel) timeOrSoundOrChannel = (timeOrSoundOrChannel : SoundChannel).position;
-		} catch(e) return;
-
-		var time:Float = timeOrSoundOrChannel;
+		var time:Null<Float> = timeOrSoundOrChannel is Float ? timeOrSoundOrChannel : null;
+		if (time == null) time = SndUtil.getAccuratePos(timeOrSoundOrChannel);
 
 		var lastEvent = curEvent;
 		curEvent = getEventAtTime(time);

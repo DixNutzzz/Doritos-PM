@@ -1,5 +1,6 @@
 package fnf.game;
 
+import fnf.backend.SndUtil;
 import flixel.FlxG;
 import flixel.util.FlxColor;
 import flixel.FlxSprite;
@@ -78,7 +79,7 @@ class Character extends FlxSprite {
 	}
 
 	override function update(elapsed:Float) {
-		var time = @:privateAccess FlxG.sound.music._channel.position;
+		var time = SndUtil.getAccuratePos(FlxG.sound.music);
 		var stepDuration = 60 / Conductor.ME.bpm * 1000 / 4;
 		var singFinished = time >= lastSingTime + stepDuration * singDuration;
 
@@ -101,6 +102,6 @@ class Character extends FlxSprite {
 	private var lastSingTime = -1.0;
 	public function sing(key:Int) {
 		playAnim(SING_ANIMS[key], true);
-		lastSingTime = @:privateAccess FlxG.sound.music._channel.position;
+		lastSingTime = SndUtil.getAccuratePos(FlxG.sound.music);
 	}
 }

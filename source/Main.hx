@@ -1,3 +1,4 @@
+import fnf.backend.save.ClientPrefs;
 import flixel.FlxG;
 import flixel.FlxGame;
 import openfl.events.Event;
@@ -14,10 +15,12 @@ class Main extends Sprite {
 	function init(?e:Event) {
 		if (hasEventListener(Event.ADDED_TO_STAGE)) removeEventListener(Event.ADDED_TO_STAGE, init);
 
-		addChild(new FlxGame(1280, 720, null, 60, 60, true, false));
+		ClientPrefs.load();
+
+		addChild(new FlxGame(1280, 720, null, ClientPrefs.data.fpsCap, ClientPrefs.data.fpsCap, true, false));
 		FlxG.mouse.useSystemCursor = true;
 
-		FlxG.console.registerClass(fnf.backend.save.ClientPrefs);
+		FlxG.console.registerClass(ClientPrefs);
 		FlxG.console.registerClass(fnf.backend.Logger);
 
 		fnf.backend.Conductor.ME = new fnf.backend.Conductor();

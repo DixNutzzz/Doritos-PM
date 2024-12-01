@@ -1,5 +1,6 @@
 package fnf.game;
 
+import fnf.backend.SndUtil;
 import flixel.sound.FlxSound;
 import flixel.addons.display.FlxZoomCamera;
 import fnf.backend.MemUtil;
@@ -72,7 +73,7 @@ class PlayState extends MusicBeatState {
 
 		super.create();
 		startSong();
-		MemUtil.clear(true);
+		MemUtil.clear();
 	}
 
 	function startSong() {
@@ -85,28 +86,23 @@ class PlayState extends MusicBeatState {
 		skipping = FlxG.keys.pressed.THREE;
 
 		if (FlxG.sound.music.pitch != (FlxG.sound.music.pitch = skipping ? 3 : 1))
-			resyncVocals();
+			SndUtil.sync(inst, vocals);
 
 		super.update(elapsed);
 	}
 
 	override function destroy() {
 		super.destroy();
-		MemUtil.clear(true);
+		MemUtil.clear();
 	}
 
-	public function resyncVocals() @:privateAccess {
-		for (vocal in vocals) if (inst._channel.position <= vocal.length) {
-			vocal.time = inst._channel.position;
-			vocal.pitch = inst.pitch;
-		}
+	override function onFocus() {
+		inst?.resume();
+		super.onFocus();
 	}
 
 	override function stepHit(step:Int) @:privateAccess {
-		for (vocal in vocals) {
-			if (Math.abs(vocal._channel.position) - inst._channel.position > 20)
-				resyncVocals();
-		}
+		SndUtil.sync(inst, vocals);
 	}
 
 	override function beatHit(beat:Int) {

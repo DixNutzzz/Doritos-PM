@@ -5,6 +5,8 @@ import fnf.backend.Controls.Action;
 
 class ClientPrefs {
 	public var antialiasing = true;
+	public var fpsCap = #if desktop 144 #else 60 #end;
+
 	public var downscroll = false;
 
 	public var keyBinds:Map<Action, Array<FlxKey>> = [
