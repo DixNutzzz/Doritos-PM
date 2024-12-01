@@ -1,11 +1,11 @@
 package fnf.game.notes;
 
+import flixel.util.FlxSignal.FlxTypedSignal;
 import flixel.FlxCamera;
 import fnf.backend.Conductor;
 import fnf.backend.beatmap.BeatmapData;
 import flixel.util.FlxSort;
 import fnf.backend.Controls;
-import fnf.backend.Controls.Action;
 import openfl.events.KeyboardEvent;
 import flixel.FlxG;
 import flixel.group.FlxGroup.FlxTypedGroup;
@@ -19,10 +19,17 @@ class StrumLine extends FlxTypedSpriteGroup<Strum> {
 
 	public var cpuControlled = false;
 
-	public function new(pos:Array<Float>, scale:Float, speed:Float) {
+	public var onHit(default, null) = new FlxTypedSignal<Note->Void>();
+	public var onMiss(default, null) = new FlxTypedSignal<Note->Void>();
+	public var onSpawn(default, null) = new FlxTypedSignal<Note->Void>();
+
+	public var owner:Character;
+
+	public function new(pos:Array<Float>, scale:Float, alpha:Float, speed:Float) {
 		super(pos[0] * FlxG.width, pos[1]);
 		scrollSpeed = speed;
 		noteScale = scale * 0.7;
+		this.alpha = alpha;
 
 		for (i in 0...4) {
 			var strum = new Strum(i);
@@ -60,7 +67,8 @@ class StrumLine extends FlxTypedSpriteGroup<Strum> {
 				sustain.animation.play('holdend');
 				if (oldSustain != null) {
 					oldSustain.animation.play('hold');
-					oldSustain.resizeByRatio(stepDuration / 100 * 1.05);
+					oldSustain.resizeByRatio(startStepDuration / 100 * 1.05);
+					oldSustain.resizeByRatio(oldSustain.getScrollSpeed());
 					oldSustain.resizeByRatio(Note.SUSTAIN_SIZE / oldSustain.frameHeight);
 					oldSustain.resizeByRatio(stepDuration / startStepDuration);
 				}
@@ -81,18 +89,20 @@ class StrumLine extends FlxTypedSpriteGroup<Strum> {
 		FlxCamera._defaultCameras = oldDefaultCameras;
 	}
 
+	var time = 0.0;
 	override function update(elapsed:Float) {
 		super.update(elapsed);
 		notes.update(elapsed);
 
-		var time = @:privateAccess FlxG.sound.music?._channel?.position ?? 0;
+		time = @:privateAccess FlxG.sound.music?._channel?.position ?? time;
 		notes.forEachAlive(note -> !note.spawned ? {
 			var spawnDelay = 2000 / note.getScrollSpeed();
 			if (note.songTime - time < spawnDelay) {
 				note.spawned = true;
-				trace('spawn note!');
+				onSpawn.dispatch(note);
 			}
 		} : {
+			if (!note.missed && time - note.songTime > PlayState.NOTE_HIT_WINDOW) missNote(note);
 			note.updatePosition(time);
 			note.updateClipping(time);
 		});
@@ -122,7 +132,7 @@ class StrumLine extends FlxTypedSpriteGroup<Strum> {
 			var keys = Controls.getKeys(action);
 			if (keys.contains(e.keyCode)) {
 				switch e.type {
-					case KeyboardEvent.KEY_DOWN: keyPress(i);
+					case KeyboardEvent.KEY_DOWN: if (FlxG.keys.checkStatus(e.keyCode, JUST_PRESSED)) keyPress(i);
 					case KeyboardEvent.KEY_UP: keyRelease(i);
 				}
 			}
@@ -130,8 +140,8 @@ class StrumLine extends FlxTypedSpriteGroup<Strum> {
 	}
 
 	public function keyPress(key:Int) {
-		var time = @:privateAccess FlxG.sound.music?._channel?.position ?? 0;
-		var inputNotes = notes.members.filter(note -> note.alive && note.strumIndex == key && !note.isSustain && note.isPossibleToHit(time));
+		time = @:privateAccess FlxG.sound.music?._channel?.position ?? time;
+		var inputNotes = notes.members.filter(note -> note.alive && note.spawned && !note.missed && note.strumIndex == key && !note.isSustain && note.isPossibleToHit(time));
 		inputNotes.sort(sortInputNotes);
 
 		if (inputNotes.length > 0) {
@@ -153,14 +163,13 @@ class StrumLine extends FlxTypedSpriteGroup<Strum> {
 	}
 
 	public function keyHold(key:Int) {
-
+		time = @:privateAccess FlxG.sound.music?._channel?.position ?? time;
+		notes.forEachAlive(note -> if (note.isSustain && note.spawned && !note.missed && !note.pressed && note.strumIndex == key) {
+			if (note.isPossibleToHit(time)) hitNote(note);
+		});
 	}
 
 	public function keyRelease(key:Int) {
-		notes.forEachAlive(note -> if (note.spawned && note.isSustain && note.pressing && note.strumIndex == key) {
-			note.pressing = false;
-		});
-
 		members[key]?.playAnim('static');
 	}
 
@@ -171,16 +180,25 @@ class StrumLine extends FlxTypedSpriteGroup<Strum> {
 	}
 
 	private function hitNote(note:Note) {
-		note.parentStrum.playAnim('confirm', true);
+		glowStrum(note.strumIndex);
+		owner.sing(note.strumIndex);
+
+		note.pressed = true;
+		onHit.dispatch(note);
 		if (!note.isSustain) note.kill();
-		else note.pressing = true;
 	}
 
-	public function strumPlayAnim(index:Int, name:String, force = false, reversed = false, frame = 0) {
+	private function missNote(note:Note) {
+		note.missed = true;
+		onMiss.dispatch(note);
+		note.kill();
+	}
+
+	public function glowStrum(index:Int) {
 		var strum = members[index];
 		if (strum == null) return;
 
-		strum.playAnim(name, force, reversed, frame);
+		strum.playAnim('confirm', true);
 		if (cpuControlled) strum.resetTimer = (60 / Conductor.ME.bpm * 1000 / 4) * 1.25 / 1000;
 	}
 }

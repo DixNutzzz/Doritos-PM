@@ -7,9 +7,6 @@ class ClientPrefs {
 	public var antialiasing = true;
 	public var downscroll = false;
 
-	public var noteClipByTime = true; // experimental feature
-	public var highAccuracyNoteClip = true;
-
 	public var keyBinds:Map<Action, Array<FlxKey>> = [
 		UP     => [FlxKey.W, FlxKey.UP],
 		DOWN   => [FlxKey.S, FlxKey.DOWN],

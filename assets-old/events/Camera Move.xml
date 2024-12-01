@@ -1,9 +1,0 @@
-<event>
-
-	<description>
-		Move camera to character
-	</description>
-
-	<param name="Character Index" type="int"/>
-
-</event>

@@ -37,7 +37,6 @@ class Note extends FlxSprite {
 	public var lowPriority = false;
 
 	private var spawned = false;
-	private var pressing = false;
 	private var pressed = false;
 	private var missed = false;
 
@@ -91,11 +90,14 @@ class Note extends FlxSprite {
 	}
 
 	public function isPossibleToHit(time:Float):Bool {
-		if (isSustain)
-			return songTime - time <= PlayState.NOTE_HIT_WINDOW;
-		else
-			return Math.abs(songTime - time) <= PlayState.NOTE_HIT_WINDOW;
+		if (isSustain) return songTime - time <= 0;
+		else return Math.abs(songTime - time) <= PlayState.NOTE_HIT_WINDOW;
 		return false;
+	}
+
+	override function update(elapsed:Float) {
+		// if (missed && !isOnScreen(camera)) kill();
+		if (alive && exists) super.update(elapsed);
 	}
 
 	public function updatePosition(time:Float) {
@@ -109,43 +111,35 @@ class Note extends FlxSprite {
 		if (isSustain)
 			y += WIDTH_DIV2;
 
-		alpha = parentStrum.alpha;
+		alpha = parentStrum.alpha * (isSustain ? 0.6 : 1);
 		angle = parentStrum.scrollDirection - 90 + parentStrum.angle;
 	}
 
 	public function updateClipping(time:Float) {
-		if (!isSustain || !pressing)
-			return;
+		if (!isSustain) return;
 
 		var tempRect = clipRect?.set() ?? FlxRect.get();
 		var clipHeight:Float = frameHeight;
 
-		if (ClientPrefs.data.noteClipByTime) {
-			var stepDuration = 60 / Conductor.ME.bpm * 1000 / 4;
-			clipHeight = frameHeight * (songTime - time) / stepDuration / getScrollSpeed();
-		} else {
-			var center = parentStrum.y + WIDTH_DIV2;
-			clipHeight = frameHeight - (center - y) / scale.y;
-		}
+		var stepDuration = 60 / Conductor.ME.bpm * 1000 / 4;
+		clipHeight = frameHeight * (songTime - time) / stepDuration / getScrollSpeed();
 
 		clipHeight = Math.min(clipHeight + WIDTH_DIV2, frameHeight);
 		tempRect.setSize(frameWidth, clipHeight);
-		if (!ClientPrefs.data.downscroll)
-			tempRect.y = frameHeight - clipHeight;
+		if (!ClientPrefs.data.downscroll) tempRect.y = frameHeight - clipHeight;
 		clipRect = tempRect;
 	}
 
 	public function resizeByRatio(ratio:Float) {
-		if (!isSustain || animation.name != 'hold' || ratio == 0)
-			return;
+		if (!isSustain || animation.name != 'hold' || ratio == 0) return;
+
 		scale.y *= ratio;
 		updateHitbox();
 	}
 
 	override function set_clipRect(v):FlxRect {
-		clipRect = ClientPrefs.data.highAccuracyNoteClip ? v : v.round();
-		if (frames != null)
-			frame = frames.frames[animation.frameIndex];
+		clipRect = v;
+		if (frames != null) frame = frames.frames[animation.frameIndex];
 		return v;
 	}
 }

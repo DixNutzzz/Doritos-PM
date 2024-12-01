@@ -37,6 +37,8 @@ typedef StrumLineData = {
 	var scrollSpeed:Float;
 	var cpu:Bool;
 	var notes:Array<NoteData>;
+
+	var ?vocalsSuffix:String;
 }
 
 enum abstract CharacterPosition(Int) from Int to Int {

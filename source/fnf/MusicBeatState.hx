@@ -3,10 +3,6 @@ package fnf;
 import flixel.addons.transition.FlxTransitionableState;
 
 class MusicBeatState extends FlxTransitionableState {
-	public var curStep(default, null) = 0;
-	public var curBeat(default, null) = 0;
-	public var curMeasure(default, null) = 0;
-
 	public function new() {
 		super();
 	}

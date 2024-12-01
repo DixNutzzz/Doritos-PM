@@ -4,6 +4,13 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.Assets;
 import openfl.utils.AssetType;
 
+enum abstract AtlasType(Int) from Int to Int {
+	var SPARROW;
+	var PACKER;
+	var ANIMATE;
+	var ASEPRITE;
+}
+
 class Paths {
 	public static inline var AUDIO_EXT = #if html5 'mp3' #else 'ogg' #end;
 

@@ -57,8 +57,12 @@
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
+	<define name="ACCESS_EDITORS"/>
+
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN"/>
 	<haxedef name="FLX_NO_DEBUG" unless="debug"/>
+
+	<!-- <haxedef name="HXCPP_GC_BIG_BLOCKS"/> -->
 
 	<haxedef name="analyzer-optimize"/>
 	<haxedef name="hscriptPos"/>
@@ -70,6 +74,8 @@
 
 	<!-- <haxelib name="rulescript"/> -->
 	<haxelib name="hscript"/>
+
+	<!-- <haxelib name="imgui-hx" if="ACCESS_EDITORS"/> -->
 
 	<!-- _________________________________ Macros _______________________________ -->
 

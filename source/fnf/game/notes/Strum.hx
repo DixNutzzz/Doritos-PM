@@ -1,7 +1,5 @@
 package fnf.game.notes;
 
-import flixel.math.FlxAngle;
-import flixel.math.FlxMath;
 import flixel.FlxSprite;
 
 class Strum extends FlxSprite {

@@ -1,9 +1,0 @@
-<xml>
-
-	<desctiption>
-		Force characters use alt sing animations
-	</desctiption>
-
-	<param name="Enabled" type="bool"/>
-
-</xml>

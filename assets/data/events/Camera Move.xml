@@ -1,10 +1,11 @@
+<!DOCTYPE doritos-event>
 <event>
 
-	<description>
+	<!-- ____________________________ Event Settings ____________________________ -->
 
-		Move camera to selected character
+	<description>Move camera to selected position</description>
 
-	</description>
+	<!-- _________________________________ Params _______________________________ -->
 
 	<param name="Character Index" type="int" optional="true"/>
 

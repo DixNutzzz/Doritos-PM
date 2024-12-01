@@ -3,12 +3,12 @@
 
 	<!-- ____________________________ Event Settings ____________________________ -->
 
-	<description>Change beats per measure and time signature</description>
+	<description>Force character to use alt animations</description>
 
 	<!-- _________________________________ Params _______________________________ -->
 
-	<param name="BPM" type="float"/>
-	<param name="Beats per Measure" type="float"/>
-	<param name="Steps per Beat" type="float"/>
+	<param name="Sing" type="bool" value="true"/>
+	<param name="Idle" type="bool" value="false"/>
+	<param name="Special" type="bool" value="false"/>
 
 </event>
