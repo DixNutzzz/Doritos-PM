@@ -47,17 +47,11 @@
 	<app path="out/${buildType}"/>
 	<source path="source"/>
 
-	<!-- __________________________ Game Assets & Etc. __________________________ -->
-
-	<set name="assets.exclude" value="*.ogg" if="html5"/>
-	<set name="assets.exclude" value="*.mp3" unless="html5"/>
-
-	<!-- <assets path="" exclude="${assets.exclude}"/> -->
-	<assets path="assets" exclude="${assets.exclude}"/>
-
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
-	<define name="ACCESS_EDITORS"/>
+	<define name="FRIEND_ONESHOT"/>
+
+	<!-- <define name="ACCESS_EDITORS"/> -->
 
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN"/>
 	<haxedef name="FLX_NO_DEBUG" unless="debug"/>
@@ -67,15 +61,28 @@
 	<haxedef name="analyzer-optimize"/>
 	<haxedef name="hscriptPos"/>
 
+	<!-- __________________________ Game Assets & Etc. __________________________ -->
+
+	<set name="assets.exclude" value="*.ogg" if="html5"/>
+	<set name="assets.exclude" value="*.mp3" unless="html5"/>
+
+	<!-- <assets path="" exclude="${assets.exclude}"/> -->
+	<assets path="assets" exclude="${assets.exclude}"/>
+	<assets path="friend-oneshot" exclude="${assets.exclude}" if="FRIEND_ONESHOT"/>
+
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel"/>
 	<haxelib name="flixel-addons"/>
+	<haxelib name="flxanimate"/>
 
 	<!-- <haxelib name="rulescript"/> -->
 	<haxelib name="hscript"/>
 
-	<!-- <haxelib name="imgui-hx" if="ACCESS_EDITORS"/> -->
+	<section if="ACCESS_EDITORS">
+		<haxelib name="haxeui-core"/>
+		<haxelib name="haxeui-flixel"/>
+	</section>
 
 	<!-- _________________________________ Macros _______________________________ -->
 

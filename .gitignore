@@ -1,3 +1,5 @@
 /.haxelib
 /dump
 /out
+
+/friend-oneshot

@@ -1,5 +1,6 @@
 package fnf.backend;
 
+import haxe.io.Path;
 import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.Assets;
 import openfl.utils.AssetType;
@@ -16,6 +17,10 @@ class Paths {
 
 	public static inline function getPath(file:String, type:AssetType):String {
 		return 'assets/${file}';
+	}
+
+	public static inline function getFolderPath(folder:String):String {
+		return Path.removeTrailingSlashes(Path.normalize('assets/${folder}'));
 	}
 
 	public static inline function formatSongPath(key:String):String {

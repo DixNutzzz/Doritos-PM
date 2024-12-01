@@ -3,9 +3,9 @@ package fnf.game;
 import fnf.backend.SndUtil;
 import flixel.FlxG;
 import flixel.util.FlxColor;
-import flixel.FlxSprite;
+import fnf.display.AtlasSprite;
 
-class Character extends FlxSprite {
+class Character extends AtlasSprite {
 	public static var SING_ANIMS = [ 'singLEFT', 'singDOWN', 'singUP', 'singRIGHT' ];
 
 	public var name(default, null):String;
@@ -35,7 +35,7 @@ class Character extends FlxSprite {
 		reloadCharacter(char);
 	}
 
-	public function reloadCharacter(char:String) {
+	public function reloadCharacter(char:String):Character {
 		switch char {
 			default:
 				frames = Paths.getSparrowAtlas('game/characters/bf');
@@ -59,6 +59,8 @@ class Character extends FlxSprite {
 				animation.addByPrefix('dodge', 'boyfriend dodge', 24, false);
 		}
 		dance();
+
+		return this;
 	}
 
 	public function updateIdleAnim() {
@@ -70,10 +72,10 @@ class Character extends FlxSprite {
 		}
 	}
 
-	public function playAnim(name:String, force = false, reversed = false, frame = 0) {
-		animation.play(name, force, reversed, frame);
-		if (animation.name != null) {
-			var offsets = animOffsets.get(animation.name) ?? [ 0, 0 ];
+	override function playAnim(name:String, force = false, reversed = false, frame = 0) {
+		super.playAnim(name, force, reversed, frame);
+		if (getAnimName() != null) {
+			var offsets = animOffsets.get(getAnimName()) ?? [ 0, 0 ];
 			offset.set(offsets[0] - positionOffsets[0], offsets[1] - positionOffsets[1]);
 		}
 	}
@@ -83,7 +85,7 @@ class Character extends FlxSprite {
 		var stepDuration = 60 / Conductor.ME.bpm * 1000 / 4;
 		var singFinished = time >= lastSingTime + stepDuration * singDuration;
 
-		if ((specialAnim && animation.finished) || singFinished) dance();
+		if ((specialAnim && isAnimFinished()) || singFinished) dance();
 
 		super.update(elapsed);
 	}

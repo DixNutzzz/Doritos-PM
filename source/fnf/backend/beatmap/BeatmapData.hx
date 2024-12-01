@@ -28,7 +28,6 @@ typedef EventData = {
 typedef StrumLineData = {
 	var charName:String;
 	var charPos:CharacterPosition;
-	var charVisible:Bool;
 
 	var strumPos:Array<Float>;
 	var strumAlpha:Float;

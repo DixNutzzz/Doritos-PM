@@ -87,7 +87,6 @@ class LegacyBeatmapMigrator extends BaseBeatmapMigrator<{song:LegacyChart}> {
 				{
 					charName: data.player2,
 					charPos: OPPONENT,
-					charVisible: true,
 
 					strumPos: [0.25, 50],
 					strumAlpha: 1,
@@ -100,7 +99,6 @@ class LegacyBeatmapMigrator extends BaseBeatmapMigrator<{song:LegacyChart}> {
 				{
 					charName: data.player1,
 					charPos: PLAYER,
-					charVisible: true,
 
 					strumPos: [0.75, 50],
 					strumAlpha: 1,
@@ -136,7 +134,6 @@ class LegacyBeatmapMigrator extends BaseBeatmapMigrator<{song:LegacyChart}> {
 					default: 'gf';
 				},
 				charPos: ADDITIONAL,
-				charVisible: true,
 
 				strumPos: [0.25, 50],
 				strumAlpha: 0,

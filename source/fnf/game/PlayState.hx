@@ -1,5 +1,8 @@
 package fnf.game;
 
+import fnf.backend.save.HighScore.Tallies;
+import flixel.ui.FlxBar;
+import flixel.FlxSprite;
 import fnf.backend.SndUtil;
 import flixel.sound.FlxSound;
 import flixel.addons.display.FlxZoomCamera;
@@ -21,6 +24,11 @@ class PlayState extends MusicBeatState {
 
 	public var strumLines:FlxTypedGroup<StrumLine>;
 
+	public var healthBarBG:FlxSprite;
+	public var healthBar:FlxBar;
+	public var healthIconP1:HealthIcon;
+	public var healthIconP2:HealthIcon;
+
 	/** Alias to `FlxG.sound.music` **/
 	public var inst:FlxSound;
 	public var vocals:Array<FlxSound> = [];
@@ -28,6 +36,14 @@ class PlayState extends MusicBeatState {
 
 	public var camGame:FlxZoomCamera;
 	public var camHUD:FlxZoomCamera;
+
+	public var health = 1.0;
+	public var tallies:Tallies = {
+		score: 0,
+		notes: 0,
+		misses: 0,
+		ratings: []
+	}
 
 	public var cameraBopStrength = 1.0;
 
@@ -68,12 +84,33 @@ class PlayState extends MusicBeatState {
 			strumLines.add(strumLine);
 
 			strumLine.owner = new Character(0, 0, dat.charName, !dat.cpu);
+			strumLine.owner.screenCenter();
 			add(strumLine.owner);
 		}
+
+		healthBarBG = new FlxSprite(0, FlxG.height * 0.9, Paths.image('game/healthBar'));
+		healthBarBG.screenCenter(X);
+		healthBarBG.cameras = [ camHUD ];
+		add(healthBarBG);
+
+		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Math.floor(healthBarBG.width - 8), Math.floor(healthBarBG.height - 8), this, 'health', 0, 2);
+		healthBar.cameras = healthBarBG.cameras;
+		reloadHealthBarColors();
+		add(healthBar);
 
 		super.create();
 		startSong();
 		MemUtil.clear();
+	}
+
+	public function reloadHealthBarColors() {
+		var op = strumLines.members[0]?.owner;
+		var pl = strumLines.members[1]?.owner;
+
+		var opColor = op?.healthColor ?? 0xFFFF0000;
+		var plColor = pl?.healthColor ?? 0xFF00FF00;
+
+		healthBar.createFilledBar(opColor, plColor);
 	}
 
 	function startSong() {
