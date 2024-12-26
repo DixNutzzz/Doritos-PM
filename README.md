@@ -1,8 +1,5 @@
 # Friday Night Funkin' > Doritos PM
 
-## Current features
-- Detailed options
-
 ## TODO
 
 ### Features
