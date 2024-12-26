@@ -1,0 +1,13 @@
+{
+	"search.exclude": {
+		"**/out": true
+	},
+	"haxe.enableExtendedIndentation": true,
+
+	"editor.insertSpaces": false,
+
+	"files.trimFinalNewlines": true,
+	"files.trimTrailingWhitespace": true,
+	"files.eol": "\n",
+	"files.insertFinalNewline": true
+}

@@ -1,0 +1,10 @@
+# Haxe
+/.haxelib
+/dump
+
+# Project
+/out
+
+# My personal stuff
+/assets-dnf
+/assets-friend

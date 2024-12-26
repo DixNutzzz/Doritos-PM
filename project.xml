@@ -1,0 +1,101 @@
+<project>
+
+	<!-- _________________________ Application Settings _________________________ -->
+
+	<app
+		title="Friday Night Funkin' > Doritos PM"
+		file="Doritos"
+		packageName="io.dix_nutz.doritos"
+		main="Main"
+		version="0.0.1-dev"
+		company="DixNutzzz"
+	/>
+
+	<!-- The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
+		or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal" -->
+	<app preloader="flixel.system.FlxPreloader"/>
+
+	<!-- _________________________ Engine Customization _________________________ -->
+
+	<!-- <define name="DNF_MOD"/> -->
+	<!-- <define name="ZZZ_MOD"/> -->
+	<!-- <define name="FP_MOD"/> -->
+
+	<!-- ____________________________ Window Settings ___________________________ -->
+
+	<!-- These window settings apply to all targets -->
+	<window
+		width="1280"
+		height="720"
+		background="#000000"
+		hardware="true"
+		fullscreen="false"
+		vsync="false"
+	/>
+
+	<!-- Web-specific -->
+	<window if="html5 || wasm"
+		resizable="true"
+	/>
+
+	<!-- Desktop-specific -->
+	<window if="desktop"
+		orientation="landscape"
+		resizable="true"
+	/>
+
+	<!-- Mobile-specific -->
+	<window if="mobile"
+		orientation="landscape"
+		fullscreen="true"
+		width="0"
+		height="0"
+		resizable="false"
+	/>
+
+	<!-- _____________________________ Path Settings ____________________________ -->
+
+	<app path="out/${buildType}"/>
+	<app if="32bits"
+		path="out/32bit"
+	/>
+
+	<assets path="assets"/>
+	<source path="source"/>
+
+	<assets path="assets-friend" rename="assets" if="FRIEND_MOD"/>
+
+	<!-- _______________________________ Libraries ______________________________ -->
+
+	<lime/>
+	<haxelib name="openfl"/>
+	<haxelib name="flixel"/>
+	<haxelib name="flixel-addons"/>
+
+	<!-- Adobe Animate atlas support -->
+	<haxelib name="flxanimate"/>
+
+	<!-- ANSI support for colored logs -->
+	<haxelib name="ansi"/>
+
+	<!-- ______________________________ Haxedefines _____________________________ -->
+
+	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN"/>
+	<haxedef name="FLX_NO_DEBUG" unless="debug"/>
+
+	<haxedef name="FLX_DEFAULT_SOUND_EXT"/>
+	<haxedef name="FLX_DEFAULT_SOUND_EXT" value="mp3" if="html5"/>
+
+	<haxedef name="FLX_NO_HEALTH"/>
+
+	<haxedef name="analyzer-optimize"/>
+	<haxedef name="message.reporting" value="pretty"/>
+
+	<!-- _________________________________ Custom _______________________________ -->
+
+	<icon path="projectFiles/icons/16.png" size="16"/>
+	<icon path="projectFiles/icons/32.png" size="32"/>
+	<icon path="projectFiles/icons/64.png" size="64"/>
+	<icon path="projectFiles/icons/OG.png"/>
+
+</project>
